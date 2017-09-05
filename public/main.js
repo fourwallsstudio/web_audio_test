@@ -25,6 +25,14 @@ const run = () => {
   const dataArray = new Uint8Array(bufferLength);
   analyser.getByteTimeDomainData(dataArray);
 
+  /* =====================================
+     VIDEO
+  ======================================== */
+
+  const videoEl = document.createElement("VIDEO");
+  videoEl.src = 'assets/RHex.mp4';
+  videoEl.autoplay = true;
+  videoEl.muted = true;
 
   /* =====================================
     THREE JS
@@ -61,17 +69,33 @@ const run = () => {
 
   camera.position.z = 5;
 
-  // const particleMaterial = new THREE.MeshPhongMaterial();
-  // particleMaterial.map = THREE.TextureLoader('assets/weed.png');
-  // particleMaterial.side = THREE.DoubleSide;
-  //
-  // const loader = new THREE.JSONLoader();
-  //
-  // loader.load('assets/weed.json', (geometry) => {
-  //   const mesh = new THREE.Mesh(geometry, particleMaterial);
-  //   scene.add( mesh );
-  // })
 
+  const vidTexture = new THREE.VideoTexture( videoEl );
+  vidTexture.minFilter = THREE.LinearFilter;
+  vidTexture.magFilter = THREE.LinearFilter;
+  vidTexture.format = THREE.RGBFormat;
+
+  const videoMatt = new THREE.MeshPhongMaterial({
+    map: vidTexture
+  });
+
+  const vidGeo = new THREE.BoxGeometry(80, 40, .1);
+  const vidCube = new THREE.Mesh(vidGeo, videoMatt);
+  vidCube.position.z = -10;
+  vidCube.rotation.x = 0.2;
+  scene.add( vidCube );
+
+  // const textureLoader = new THREE.TextureLoader();
+  //
+  // textureLoader.load('assets/aqua.jpg', (texture) => {
+  //   const aquaGeo = new THREE.BoxGeometry(80, 40, .1);
+  //   const aqua = new THREE.MeshPhongMaterial({
+  //     map: texture
+  //   });
+  //   const auqaCube = new THREE.Mesh(aquaGeo, aqua);
+  //   auqaCube.position.z = -20;
+  //   scene.add( auqaCube );
+  // })
 
   /* =====================================
     ANIMATE
@@ -82,7 +106,7 @@ const run = () => {
 
     analyser.getByteTimeDomainData(dataArray);
 
-    light2.intensity = dataArray[0] / 256.0;
+    light2.intensity = dataArray[0] / 128.0 / 2;
     cube.position.y = dataArray[0] / 64.0 - 4;
     cube2.position.y = dataArray[100] / 64.0 - 4;
     cube3.position.y = dataArray[200] / 64.0 - 4;
