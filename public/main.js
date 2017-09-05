@@ -31,18 +31,18 @@ const run = () => {
   ======================================== */
 
   const scene = new THREE.Scene();
-	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+  const camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
   const light1 = new THREE.AmbientLight(0xffffff, 0.1)
   const light2 = new THREE.PointLight(0xffffff, .8, 100)
   light2.position.set( 0, 0, 10 );
 
-	const renderer = new THREE.WebGLRenderer();
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	document.body.appendChild( renderer.domElement );
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( renderer.domElement );
 
-	const geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
-	const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
-	const cube = new THREE.Mesh( geometry, material );
+  const geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
+  const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+  const cube = new THREE.Mesh( geometry, material );
   const cube2 = new THREE.Mesh( geometry, material );
   const cube3 = new THREE.Mesh( geometry, material );
   const cube4 = new THREE.Mesh( geometry, material );
@@ -57,9 +57,9 @@ const run = () => {
   cube6.position.x = 2;
   cube7.position.x = 3;
 
-	scene.add( cube, cube2, cube3, cube4, cube5, cube6, cube7, light1, light2 );
+  scene.add( cube, cube2, cube3, cube4, cube5, cube6, cube7, light1, light2 );
 
-	camera.position.z = 5;
+  camera.position.z = 5;
 
   // const particleMaterial = new THREE.MeshPhongMaterial();
   // particleMaterial.map = THREE.TextureLoader('assets/weed.png');
@@ -77,8 +77,8 @@ const run = () => {
     ANIMATE
   ======================================== */
 
-	const animate = function () {
-		requestAnimationFrame( animate );
+  const animate = function () {
+    requestAnimationFrame( animate );
 
     analyser.getByteTimeDomainData(dataArray);
 
@@ -91,10 +91,10 @@ const run = () => {
     cube6.position.y = dataArray[500] / 64.0 - 4;
     cube7.position.y = dataArray[600] / 64.0 - 4;
 
-		renderer.render(scene, camera);
-	};
+    renderer.render(scene, camera);
+  };
 
-	animate();
+  animate();
 }
 
 
