@@ -33,6 +33,7 @@ const run = () => {
   videoEl.src = 'assets/RHex.mp4';
   videoEl.autoplay = true;
   videoEl.muted = true;
+  videoEl.loop = true;
 
   /* =====================================
     THREE JS
@@ -79,21 +80,33 @@ const run = () => {
     map: vidTexture
   });
 
-  const vidGeo = new THREE.BoxGeometry(80, 40, .1);
-  const vidCube = new THREE.Mesh(vidGeo, videoMatt);
-  vidCube.position.z = -10;
-  vidCube.rotation.x = 0.2;
-  scene.add( vidCube );
+  const loader = new THREE.JSONLoader();
+
+  loader.load('assets/weed2.json', (geometry) => {
+    const weed = new THREE.Mesh( geometry, videoMatt );
+    weed.position.z = -8;
+    weed.rotation.x = 1;
+    scene.add( weed );
+  });
+
+  // const vidGeo = new THREE.BoxGeometry(10, 5, .1);
+  // const vidCube = new THREE.Mesh(vidGeo, videoMatt);
+  // vidCube.position.z = -5;
+  // vidCube.position.x = 5;
+  // vidCube.rotation.y = -0.5;
+  // scene.add( vidCube );
 
   // const textureLoader = new THREE.TextureLoader();
   //
   // textureLoader.load('assets/aqua.jpg', (texture) => {
-  //   const aquaGeo = new THREE.BoxGeometry(80, 40, .1);
+  //   const aquaGeo = new THREE.BoxGeometry(10, 5, .1);
   //   const aqua = new THREE.MeshPhongMaterial({
   //     map: texture
   //   });
   //   const auqaCube = new THREE.Mesh(aquaGeo, aqua);
-  //   auqaCube.position.z = -20;
+  //   auqaCube.position.z = -5;
+  //   auqaCube.position.x = -5;
+  //   auqaCube.rotation.y = 0.5;
   //   scene.add( auqaCube );
   // })
 
