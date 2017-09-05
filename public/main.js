@@ -1,12 +1,12 @@
+const THREE = require('three')
+
 const run = () => {
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   const analyser = audioCtx.createAnalyser();
 
   const audioEl = new Audio();
-  audioEl.crossOrigin = 'anonymous';
   audioEl.src = 'assets/functions.mp3';
-  audioEl.controls = true;
   audioEl.autoplay = true;
 
   const sound = audioCtx.createMediaElementSource(audioEl);
@@ -20,45 +20,73 @@ const run = () => {
   const dataArray = new Uint8Array(bufferLength);
   analyser.getByteTimeDomainData(dataArray);
 
-  const canvas = document.getElementById("canvas");
-  const canvasCtx = canvas.getContext("2d");
 
-  function draw() {
 
-    drawVisual = requestAnimationFrame(draw);
+
+
+
+
+
+  var scene = new THREE.Scene();
+	var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+  const light1 = new THREE.AmbientLight(0xffffff, 0.1)
+  const light2 = new THREE.PointLight(0xffffff, .8, 100)
+  light2.position.set( 0, 0, 10 );
+
+	var renderer = new THREE.WebGLRenderer();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.body.appendChild( renderer.domElement );
+
+	var geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
+	var material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+	var cube = new THREE.Mesh( geometry, material );
+  var cube2 = new THREE.Mesh( geometry, material );
+  var cube3 = new THREE.Mesh( geometry, material );
+  var cube4 = new THREE.Mesh( geometry, material );
+  var cube5 = new THREE.Mesh( geometry, material );
+  var cube6 = new THREE.Mesh( geometry, material );
+  var cube7 = new THREE.Mesh( geometry, material );
+  cube.position.x = -3;
+  cube2.position.x = -2;
+  cube3.position.x = -1;
+  cube4.position.x = 0;
+  cube5.position.x = 1;
+  cube6.position.x = 2;
+  cube7.position.x = 3;
+
+	scene.add( cube, cube2, cube3, cube4, cube5, cube6, cube7, light1, light2 );
+
+	camera.position.z = 5;
+
+  // const particleMaterial = new THREE.MeshPhongMaterial();
+  // particleMaterial.map = THREE.TextureLoader('assets/weed.png');
+  // particleMaterial.side = THREE.DoubleSide;
+  //
+  // const loader = new THREE.JSONLoader();
+  //
+  // loader.load('assets/weed.json', (geometry) => {
+  //   const mesh = new THREE.Mesh(geometry, particleMaterial);
+  //   scene.add( mesh );
+  // })
+
+	var animate = function () {
+		requestAnimationFrame( animate );
 
     analyser.getByteTimeDomainData(dataArray);
 
-    canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+    light2.intensity = dataArray[0] / 256.0;
+    cube.position.y = dataArray[0] / 64.0 - 4;
+    cube2.position.y = dataArray[100] / 64.0 - 4;
+    cube3.position.y = dataArray[200] / 64.0 - 4;
+    cube4.position.y = dataArray[300] / 64.0 - 4;
+    cube5.position.y = dataArray[400] / 64.0 - 4;
+    cube6.position.y = dataArray[500] / 64.0 - 4;
+    cube7.position.y = dataArray[600] / 64.0 - 4;
 
-    canvasCtx.lineWidth = 2;
-    canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+		renderer.render(scene, camera);
+	};
 
-    canvasCtx.beginPath();
-
-    const sliceWidth = canvas.width * 1.0 / bufferLength;
-    let x = 0;
-
-    for (var i = 0; i < bufferLength; i++) {
-
-      let v = dataArray[i] / 128.0;
-      let y = v * canvas.height / 2;
-
-      if (i === 0) {
-        canvasCtx.moveTo(x, y);
-      } else {
-        canvasCtx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
-    }
-
-    canvasCtx.lineTo(canvas.width, canvas.height / 2);
-    canvasCtx.stroke();
-  };
-
-  draw();
+	animate();
 }
 
 
