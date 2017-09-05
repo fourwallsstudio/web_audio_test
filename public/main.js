@@ -1,6 +1,11 @@
 const THREE = require('three')
 
 const run = () => {
+
+  /* =====================================
+    AUDIO CONTEXT
+  ======================================== */
+
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   const analyser = audioCtx.createAnalyser();
@@ -21,11 +26,9 @@ const run = () => {
   analyser.getByteTimeDomainData(dataArray);
 
 
-
-
-
-
-
+  /* =====================================
+    THREE JS
+  ======================================== */
 
   var scene = new THREE.Scene();
 	var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
@@ -68,6 +71,11 @@ const run = () => {
   //   const mesh = new THREE.Mesh(geometry, particleMaterial);
   //   scene.add( mesh );
   // })
+
+
+  /* =====================================
+    ANIMATE
+  ======================================== */
 
 	var animate = function () {
 		requestAnimationFrame( animate );
