@@ -18,16 +18,31 @@ const run = () => {
   sound.connect(analyser);
 
   document.querySelector('body').append(audioEl);
-  analyser.connect(audioCtx.destination);
 
   analyser.fftSize = 2048;
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
   analyser.getByteTimeDomainData(dataArray);
 
+  const biquadFilter = audioCtx.createBiquadFilter();
+  // biquadFilter.type = 'lowpass';
+  // biquadFilter.frequency.value = 200;
+  // biquadFilter.gain.value = 40;
+
+
+  // const delay = audioCtx.createDelay(5.0);
+  // delay.delayTime.value = .1;
+  //
+  // analyser.connect(delay);
+  // delay.connect(audioCtx.destination);
+  // biquadFilter.connect(audioCtx.destination);
+  analyser.connect(audioCtx.destination);
+
+
   /* =====================================
      VIDEO
   ======================================== */
+
 
   const videoEl = document.createElement("VIDEO");
   videoEl.src = 'assets/RHex.mp4';
@@ -49,7 +64,7 @@ const run = () => {
   renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( renderer.domElement );
 
-  const geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
+  const geometry = new THREE.BoxGeometry( 1, 0.1, 0.1 );
   const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
   const cube = new THREE.Mesh( geometry, material );
   const cube2 = new THREE.Mesh( geometry, material );
@@ -84,7 +99,8 @@ const run = () => {
 
   loader.load('assets/weed2.json', (geometry) => {
     const weed = new THREE.Mesh( geometry, videoMatt );
-    weed.position.z = -8;
+    weed.position.z = -6;
+    weed.position.y = 1;
     weed.rotation.x = 1;
     scene.add( weed );
   });
@@ -121,12 +137,21 @@ const run = () => {
 
     light2.intensity = dataArray[0] / 128.0 / 2;
     cube.position.y = dataArray[0] / 64.0 - 4;
+    cube.position.z = dataArray[0] / 64.0 - 2;
     cube2.position.y = dataArray[100] / 64.0 - 4;
+    cube2.position.z = dataArray[0] / 64.0 - 2;
     cube3.position.y = dataArray[200] / 64.0 - 4;
+    cube3.position.z = dataArray[0] / 64.0 - 2;
     cube4.position.y = dataArray[300] / 64.0 - 4;
+    cube4.position.z = dataArray[0] / 64.0 - 2;
     cube5.position.y = dataArray[400] / 64.0 - 4;
+    cube5.position.z = dataArray[0] / 64.0 - 2;
     cube6.position.y = dataArray[500] / 64.0 - 4;
+    cube6.position.z = dataArray[0] / 64.0 - 2;
     cube7.position.y = dataArray[600] / 64.0 - 4;
+    cube7.position.z = dataArray[0] / 64.0 - 2;
+
+    // camera.position.z -= 0.01;
 
     renderer.render(scene, camera);
   };
