@@ -1,23 +1,47 @@
 const THREE = require('three')
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
 const run = () => {
 
   /* =====================================
     AUDIO CONTEXT
   ======================================== */
 
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
   const analyser = audioCtx.createAnalyser();
 
-  const audioEl = new Audio();
-  audioEl.src = 'assets/functions.mp3';
-  audioEl.autoplay = true;
+  // const audioEl = new Audio();
+  // audioEl.src = 'assets/functions.mp3';
+  // audioEl.autoplay = true;
+  //
+  // const sound = audioCtx.createMediaElementSource(audioEl);
+  // sound.connect(analyser);
 
-  const sound = audioCtx.createMediaElementSource(audioEl);
-  sound.connect(analyser);
+  // document.querySelector('body').append(audioEl);
 
-  document.querySelector('body').append(audioEl);
+  const source = audioCtx.createBufferSource();
+  const request = new XMLHttpRequest();
+
+  request.open('GET', 'assets/functions.mp3', true);
+
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    const audioData = request.response;
+
+    audioCtx.decodeAudioData(audioData, function(buffer) {
+        source.buffer = buffer;
+
+        source.connect(analyser);
+        source.loop = true;
+        source.start(0);
+      },
+
+      function(e){ console.log("Error with decoding audio data" + e.err); });
+  }
+
+  request.send();
 
   analyser.fftSize = 2048;
   const bufferLength = analyser.frequencyBinCount;
@@ -25,17 +49,6 @@ const run = () => {
   analyser.getByteTimeDomainData(dataArray);
 
   const biquadFilter = audioCtx.createBiquadFilter();
-  // biquadFilter.type = 'lowpass';
-  // biquadFilter.frequency.value = 200;
-  // biquadFilter.gain.value = 40;
-
-
-  // const delay = audioCtx.createDelay(5.0);
-  // delay.delayTime.value = .1;
-  //
-  // analyser.connect(delay);
-  // delay.connect(audioCtx.destination);
-  // biquadFilter.connect(audioCtx.destination);
   analyser.connect(audioCtx.destination);
 
 
@@ -102,29 +115,23 @@ const run = () => {
     weed.position.z = -6;
     weed.position.y = 1;
     weed.rotation.x = 1;
+    weed.name = "weed"
     scene.add( weed );
   });
 
-  // const vidGeo = new THREE.BoxGeometry(10, 5, .1);
-  // const vidCube = new THREE.Mesh(vidGeo, videoMatt);
-  // vidCube.position.z = -5;
-  // vidCube.position.x = 5;
-  // vidCube.rotation.y = -0.5;
-  // scene.add( vidCube );
+  /* =====================================
+    RAYCASTER
+  ======================================== */
 
-  // const textureLoader = new THREE.TextureLoader();
-  //
-  // textureLoader.load('assets/aqua.jpg', (texture) => {
-  //   const aquaGeo = new THREE.BoxGeometry(10, 5, .1);
-  //   const aqua = new THREE.MeshPhongMaterial({
-  //     map: texture
-  //   });
-  //   const auqaCube = new THREE.Mesh(aquaGeo, aqua);
-  //   auqaCube.position.z = -5;
-  //   auqaCube.position.x = -5;
-  //   auqaCube.rotation.y = 0.5;
-  //   scene.add( auqaCube );
-  // })
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  const onClick = (event) => {
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+  }
+
+
 
   /* =====================================
     ANIMATE
@@ -151,11 +158,21 @@ const run = () => {
     cube7.position.y = dataArray[600] / 64.0 - 4;
     cube7.position.z = dataArray[0] / 64.0 - 2;
 
-    // camera.position.z -= 0.01;
+
+    raycaster.setFromCamera( mouse, camera );
+
+    const intersects = raycaster.intersectObjects( scene.children );
+
+    for ( let i = 0; i < intersects.length; i++ ) {
+        if (intersects[ i ].object.name != 'weed') {
+          intersects[ i ].object.material.color.set( 0xff0000 );
+        }
+    }
 
     renderer.render(scene, camera);
   };
 
+  window.addEventListener( 'click', onClick, false );
   animate();
 }
 
